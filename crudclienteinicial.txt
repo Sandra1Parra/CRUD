@@ -1,0 +1,124 @@
+* To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package CRUD;
+import java.sql.*;
+import java.util.*;
+import javax.swing.*;
+import Entidades.Clientes;
+import c2r5.Conexion;
+//import vista.InterfazCliente;
+/**
+ *
+ * @author yanyg
+ */
+//implements CRUD<Clientes>
+public class CrudClienteInicial implements CRUD<Clientes>{
+    @Override
+    public boolean crear(Clientes objeto) {
+        String sql="INSERT INTO cliente(cliente_username, cliente_nombre,"
+               + "cliente_apellidos, cliente_email, cliente_celular,"
+               + "cliente_contraseña,cliente_fechaNacimiento)VALUES)VALUES(?,?,?,?,?,?,?) ";
+        String sql2="INSERT INTO cliente VALUES(?,?,?,?,?,?,?) ";
+        try(Connection conn = Conexion.conectar()){
+            //if(objeto.usuario!=){
+            PreparedStatement statement = conn.prepareStatement(sql2);
+                    statement.setString(1, objeto.usuario);
+                    statement.setString(2, objeto.nombresCliente);
+                    statement.setString(3, objeto.apellidosCliente);
+                    statement.setString(4, objeto.emailCliente);
+                    statement.setString(5, objeto.celularCliente);
+                    statement.setInt(6, objeto.contrasenaCliente);
+                    statement.setString(7, objeto.fechaNacimientoCliente);
+                    //actualiza la base de datos
+               int rowsInserted = statement.executeUpdate();
+            conn.close();
+            if ( rowsInserted > 0) {
+                System.out.println("Registro añadido exitosamente generico");
+                JOptionPane.showMessageDialog(null, "Registro agregado exitosamente","REGISTRO",JOptionPane.INFORMATION_MESSAGE);
+                return true;
+            }
+       }  catch(SQLException e){
+           JOptionPane.showMessageDialog(null, "Error insertando cliente");
+           System.out.println(e.getStackTrace());
+       }
+       return false;
+    }
+
+    //metodo de creacion de nuevo registro
+
+    @Override
+    public ArrayList<Clientes> obtener() {
+        //se llama y llena en los campos de texto de la interfaz grafica
+        ArrayList<Clientes> clientes = new ArrayList<>();
+        try(Connection conn = Conexion.conectar()){
+            String sql="SELECT * FROM cliente";
+            //System.out.println("1");
+            Statement statement = conn.createStatement();
+            //System.out.println("2");
+            ResultSet result = statement.executeQuery(sql);
+            //System.out.println("3");
+            while (result.next()){
+                //System.out.println("while");
+                String usuario = result.getString("cliente_username");
+                //System.out.println(usuario);
+                String nombre = result.getString(2);
+                //System.out.println(nombre);
+                String apellido = result.getString(3);
+                String email = result.getString(4);
+                String celular = result.getString(5);
+                int contraseña = result.getInt(6);
+                String fechaNacimiento = result.getString(7);
+                Clientes c = new Clientes(usuario, nombre, apellido,email,celular,contraseña,fechaNacimiento);
+                System.out.println(c);
+                clientes.add(c);
+            }
+            conn.close();
+            statement.close();
+        }  catch(SQLException e){
+           System.out.println("Error obteniendo cliente");
+       }
+       return clientes;
+    }
+
+    @Override
+    public boolean actualizar(Clientes objeto) {
+        try(Connection conn = Conexion.conectar()){
+            String sql="UPDATE cliente SET cliente_username=?,cliente_nombre=?,cliente_apellidos=?,cliente_email=?,cliente_celular=?,cliente_contraseña=?,cliente_fechaNacimiento=?";
+            PreparedStatement statement = conn.prepareStatement(sql);
+                statement.setString(1, objeto.getUsuario());
+                statement.setString(2, objeto.getNombresCliente());
+                statement.setString(3, objeto.getApellidosCliente());
+                statement.setString(4, objeto.getEmailCliente());
+                statement.setString(5, objeto.getCelularCliente());
+                statement.setInt(6, objeto.getContrasenaCliente());
+                statement.setString(7, objeto.getFechaNacimientoCliente());
+            int modi =statement.executeUpdate();
+            if ( modi > 0) {
+                JOptionPane.showMessageDialog(null, "Se ha modifcado Correctamente","Confirmacion",JOptionPane.INFORMATION_MESSAGE);
+                System.out.println("Registro añadido exitosamente");
+                //JOptionPane.show
+                return true;
+            }
+            conn.close();
+        }catch(Exception ex){
+            System.out.println("Error modificando proveedor" + ex);
+            JOptionPane.showMessageDialog(null,"Error al Modificar","Error",JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean remover(Clientes objeto) {
+        /*Conexion conex=new Conexion();
+        try{
+            
+        } catch(SQLException e){
+           System.out.println("Error eliminando cliente");
+       }*/
+        return false;
+    }
+
+    
+}
